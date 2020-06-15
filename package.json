@@ -17,17 +17,15 @@
     "release-check": "npm run test && npm audit && npm outdated",
     "doc": "rm -rf ./tsdoc && typedoc --readme none --excludeNotExported --mode file --theme markdown --out ./tsdoc ./src",
     "package": "rm -rf ./dist && tsc && copyfiles -u 1 \"./src/**/*.js\" dist/",
-    "package-web": "webpack && rm -rf ./dist-web/dist && openssl dgst -sha384 -binary ./dist-web/conseiljs.min.js | openssl base64 -A"
+    "package-web": "webpack && rm -rf ./dist-web/dist && openssl dgst -sha384 -binary ./dist-web/conseiljs-softsigner.min.js | openssl base64 -A"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Cryptonomic/ConseilJS.git"
+    "url": "git+https://github.com/Cryptonomic/ConseilJS-softsigner.git"
   },
   "keywords": [
     "tezos",
     "conseil",
-    "blockchain analytics",
-    "blockchain reporting",
     "blockchain data access",
     "web3",
     "dapp"
@@ -41,7 +39,7 @@
     }
   ],
   "bugs": {
-    "url": "https://github.com/Cryptonomic/ConseilJS/issues"
+    "url": "https://github.com/Cryptonomic/ConseilJS-softsigner/issues"
   },
   "homepage": "https://cryptonomic.github.io/ConseilJS/#/",
   "nyc": {
