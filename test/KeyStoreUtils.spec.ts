@@ -85,4 +85,14 @@ describe('KeyStoreUtils tests', () => {
 
         expect(result.toString('utf8')).to.equal('Tezos Tacos Nachos Burritos');
     });
+
+    it('checkTextSignature', async () => {
+        const message = 'Tacos Burritos';
+        const keyStore = await KeyStoreUtils.restoreIdentityFromSecretKey('edskRgu8wHxjwayvnmpLDDijzD3VZDoAH7ZLqJWuG4zg7LbxmSWZWhtkSyM5Uby41rGfsBGk4iPKWHSDniFyCRv3j7YFCknyHH');
+        const sig = 'edsigtbmrgC8V2xU3Dc3n99v8CZk3cQAX1PcwbGRDkVkFSqax996qTPXsLryas9WBN9mCXiJFQSUiVkkkot6jQ4eEsU8rAt6jzW';
+
+        const result = await KeyStoreUtils.checkTextSignature(sig, message, keyStore.publicKey);
+
+        expect(result).to.equal(true);
+    });
 });

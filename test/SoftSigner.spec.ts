@@ -17,17 +17,16 @@ describe('SoftSigner tests', () => {
         expect(signer).to.be.not.null;
     });
 
-
     it('sign', async () => {
         const result = await signer.sign(Buffer.from('Tacos Burritos', 'utf8'))
         const signature = TezosMessageUtils.readSignatureWithHint(result, 'edsig');
 
-        expect(signature).to.equal('edsigtmoSkpMujSVYXH6zxSaZyiH27qYscBezFWNnDohoBoKdmY9c4Jk8EhdNGok9riQGLu1MTnXM9y5om2cRAUCdFtXKQKp57f');
+        expect(signature).to.equal('edsigtbmrgC8V2xU3Dc3n99v8CZk3cQAX1PcwbGRDkVkFSqax996qTPXsLryas9WBN9mCXiJFQSUiVkkkot6jQ4eEsU8rAt6jzW');
     });
 
     it('signText', async () => {
         const result = await signer.signText('Nachos Guacamole');
 
-        expect(result).to.equal('edsigtnrQesbWjnoKmKYZZR9dSJYwkWMJw4rEq9xwRuehEhXzk1tCmvCAnTEgCE1zaYhpPHpECYapufEtFBSkj4vCSj1gKJLnZN');
+        expect(result).to.equal('edsigtgAgZNqK9JvihdDj4BduDaQYJR5vfca9pbowNDtc4aTRnbUcFv4YmJbQDBK9XpMnhntW26uSAHtEtpCo84Rt7jPg3iYXqY');
     });
 });
