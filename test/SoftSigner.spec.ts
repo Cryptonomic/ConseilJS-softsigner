@@ -18,7 +18,7 @@ describe('SoftSigner tests', () => {
     });
 
     it('sign', async () => {
-        const result = await signer.sign(Buffer.from('Tacos Burritos', 'utf8'))
+        const result = await signer.signOperation(Buffer.from('Tacos Burritos', 'utf8'))
         const signature = TezosMessageUtils.readSignatureWithHint(result, 'edsig');
 
         expect(signature).to.equal('edsigtbmrgC8V2xU3Dc3n99v8CZk3cQAX1PcwbGRDkVkFSqax996qTPXsLryas9WBN9mCXiJFQSUiVkkkot6jQ4eEsU8rAt6jzW');

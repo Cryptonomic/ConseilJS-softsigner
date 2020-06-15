@@ -19,8 +19,8 @@ export class SoftSigner implements Signer {
      * @param {Buffer} secretKey Secret key
      * @returns {Buffer} Signature
      */
-    public async sign(bytes: Buffer): Promise<Buffer> {
-        return CryptoUtils.signDetached(bytes, this.secretKey);
+    public async signOperation(bytes: Buffer): Promise<Buffer> {
+        return CryptoUtils.signDetached(TezosMessageUtils.simpleHash(bytes, 32), this.secretKey);
     }
 
     /**
