@@ -1,5 +1,6 @@
 import { expect, use } from "chai";
 import chaiAsPromised from 'chai-as-promised';
+import { TezosMessageUtils } from 'conseiljs';
 
 import { KeyStoreUtils } from '../src/KeyStoreUtils';
 
@@ -67,13 +68,21 @@ describe('KeyStoreUtils tests', () => {
         expect(result.publicKeyHash).to.equal(faucetAccount.pkh);
     });
 
-    it('generateKeys', async () => { });
+    it('encryptMessage', async () => {
+        const message = 'Tezos Tacos Nachos Burritos';
+        const salt = TezosMessageUtils.writeBufferWithHint('3xa4FZquGKYyT8542XKG3nsx7xN8');
 
-    it('recoverKeys', async () => { });
+        const result = await KeyStoreUtils.encryptMessage(Buffer.from(message, 'utf8'), 'Tezos', salt);
 
-    it('decryptMessage', async () => { });
+        expect(result).to.exist;
+    });
 
-    it('encryptMessage', async () => { });
+    it('decryptMessage', async () => {
+        const message = TezosMessageUtils.writeBufferWithHint('MhBgNSenyWP2xrBaMSBmdi9VSMHqtZvTAgBJRmyPpKmMoGZp6gJr2fKHHikzxeiuxFsnKJL6jQboXXqLX29ugpKT5QWyu6t9C');
+        const salt = TezosMessageUtils.writeBufferWithHint('3xa4FZquGKYyT8542XKG3nsx7xN8');
 
-    it('checkTextSignature', async () => { });
+        const result = await KeyStoreUtils.decryptMessage(message, 'Tezos', salt);
+
+        expect(result.toString('utf8')).to.equal('Tezos Tacos Nachos Burritos');
+    });
 });
