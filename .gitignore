@@ -1,0 +1,8 @@
+.DS_Store
+.nyc_output
+.coveralls.yml
+dist/
+coverage/
+node_modules/
+
+**/TestAssets.ts
