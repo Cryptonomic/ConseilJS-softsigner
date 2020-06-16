@@ -19,7 +19,7 @@ export class SoftSigner implements Signer {
      * @param {Buffer} secretKey Secret key
      * @returns {Buffer} Signature
      */
-    public async sign(bytes: Buffer): Promise<Buffer> {
+    public async signOperation(bytes: Buffer): Promise<Buffer> {
         return CryptoUtils.signDetached(TezosMessageUtils.simpleHash(bytes, 32), this.secretKey);
     }
 
@@ -31,7 +31,7 @@ export class SoftSigner implements Signer {
      * @returns {Promise<string>} base58check-encoded signature prefixed with 'edsig'
      */
     public async signText(message: string): Promise<string> {
-        const messageSig = await this.sign(Buffer.from(message, 'utf8'));
+        const messageSig = await CryptoUtils.signDetached(Buffer.from(message, 'utf8'), this.secretKey);
 
         return TezosMessageUtils.readSignatureWithHint(messageSig, 'edsig');
     }
