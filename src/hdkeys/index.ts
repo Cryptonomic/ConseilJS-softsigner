@@ -21,16 +21,6 @@ class HDNode {
         this.publicKey = publicKey;
     }
 
-    static fromSeed(seed: Buffer, curve: crypto.CurveInfo): HDNode {
-        // need to verify seed length is 512 bits
-        let i = crypto.hmacSHA512(Buffer.from(curve.bip32Name, 'utf8'), seed);
-        const iL = i.slice(0, 32);
-        const iR = i.slice(32);
-        let ret = new HDNode(iL, iR, undefined);
-        ret.depth = 0;
-        return ret;
-    }
-
     isNeutered(): boolean {
         return this.privateKey === undefined;
     }
@@ -60,11 +50,19 @@ class HDNode {
         ret.depth = this.depth + 1;
         return ret;
     }
-
 }
 
-async function main() {
+function fromSeed(seed: Buffer, curve: crypto.CurveInfo): HDNode {
+        // need to verify seed length is 512 bits
+        let i = crypto.hmacSHA512(Buffer.from(curve.bip32Name, 'utf8'), seed);
+        const iL = i.slice(0, 32);
+        const iR = i.slice(32);
+        let ret = new HDNode(iL, iR, undefined);
+        ret.depth = 0;
+        return ret;
+    }
 
+function main() {
     let node: HDNode = HDNode.fromSeed(Buffer.from(params.seed, 'hex'), crypto.SECP256K1);
     console.log(node.privateKey.toString('hex'));
     let child0 = node.derive(0 + HARDENED);
