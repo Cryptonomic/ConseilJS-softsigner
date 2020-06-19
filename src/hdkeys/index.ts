@@ -5,9 +5,7 @@ import * as params from './testvector-1.json';
 const HARDENED = 0x80000000;
 
 function BIP32Path(value: string): boolean {
-  return (
-      /*typeforce.String(value) && */
-      value.match(/^(m\/)?(\d+'?\/)*\d+'?$/) !== null);
+  return value.match(/^(m\/)?(\d+'?\/)*\d+'?$/) !== null;
 }
 
 // https://github.com/satoshilabs/slips/blob/master/slip-0010.md
@@ -63,44 +61,9 @@ class HDNode {
         return ret;
     }
 
-    // derivePath(path: string): HDNode {
-    //     // typeforce(BIP32Path, path);
-
-    //     let splitPath = path.split('/');
-    //     if (splitPath[0] === 'm') {
-    //         if (this.parentFingerprint)
-    //         throw new TypeError('Expected master, got child');
-
-    //         splitPath = splitPath.slice(1);
-    //     }
-
-    //     return splitPath.reduce(
-    //         (prevHd, indexStr) => {
-    //         let index;
-    //         if (indexStr.slice(-1) === `'`) {
-    //             index = parseInt(indexStr.slice(0, -1), 10);
-    //             return prevHd.deriveHardened(index);
-    //         } else {
-    //             index = parseInt(indexStr, 10);
-    //             return prevHd.derive(index);
-    //         }
-    //         },
-    //         this as HDNode,
-    //     );
-    // }
 }
 
 async function main() {
-    // // get pubkey from ledger
-    // let ledger = await ledgersigner.TezosLedgerConnector.getInstance();
-    // console.log(await ledger.getAddress(derivationPath, true, ledgersigner.Curve.SECP256K1));
-    // console.log("ledger\n" + (await ledgerKeyStore.getTezosPublicKey(derivationPath)));
-
-    // just stored this in a const above
-    // let seed = (await bip39.mnemonicToSeed(mnemonic, passphrase)).toString("hex");
-    // console.log(seed);
-
-    // let bip32Node = bip32.fromSeed(Buffer.from(seed, 'utf8'));
 
     let node: HDNode = HDNode.fromSeed(Buffer.from(params.seed, 'hex'), crypto.SECP256K1);
     console.log(node.privateKey.toString('hex'));
