@@ -1,6 +1,6 @@
 import * as crypto from './crypto';
 
-import * as params from './testvector-1.json';
+import * as tests from './tests.json';
 
 const HARDENED = 0x80000000;
 
@@ -15,6 +15,7 @@ class HDNode {
     privateKey: Buffer;
     chainCode: Buffer;
     publicKey: Buffer | undefined;
+    index: number;
     depth: number;
 
     constructor(privateKey: Buffer, chainCode: Buffer, publicKey: Buffer | undefined) {
@@ -38,7 +39,7 @@ class HDNode {
     }
 
     derive(index: number): HDNode {
-        // curve ed25519 - only support hardened derivation
+        // only support curve ed25519 - hardened derivation required
         if (!(index & HARDENED)) 
             throw "Unhardened derivation unsupported";
 
@@ -53,41 +54,31 @@ class HDNode {
         const iL = i.slice(0, 32);
         const iR = i.slice(32);
 
-        // check if key is valid 
-        // while (!(new crypto.SECP256K1()).isValidPrivateKey(iL)) {
-
-        //     // pad with 0x01 instead of increasing index
-        // }
-        let ret = new HDNode(iL, iR, undefined);
-        ret.depth = this.depth + 1;
-        return ret;
+        let child = new HDNode(iL, iR, undefined);
+        child.depth = this.depth + 1;
+        return child;
     }
 
-    // derivePath(path: string): HDNode {
-    //     // typeforce(BIP32Path, path);
+    derivePath(path: string): HDNode {
+        if (!BIP32Path(path))
+            throw "Invalid derivation path";
 
-    //     let splitPath = path.split('/');
-    //     if (splitPath[0] === 'm') {
-    //         if (this.parentFingerprint)
-    //         throw new TypeError('Expected master, got child');
+        let splitPath = path.split('/').slice(1);
 
-    //         splitPath = splitPath.slice(1);
-    //     }
-
-    //     return splitPath.reduce(
-    //         (prevHd, indexStr) => {
-    //         let index;
-    //         if (indexStr.slice(-1) === `'`) {
-    //             index = parseInt(indexStr.slice(0, -1), 10);
-    //             return prevHd.deriveHardened(index);
-    //         } else {
-    //             index = parseInt(indexStr, 10);
-    //             return prevHd.derive(index);
-    //         }
-    //         },
-    //         this as HDNode,
-    //     );
-    // }
+        return splitPath.reduce(
+            (prevHDNode, indexStr) => {
+            let index;
+            if (indexStr.slice(-1) === `'`) {
+                index = parseInt(indexStr.slice(0, -1), 10);
+                return prevHDNode.derive(index+HARDENED);
+            } else {
+                // only support ED25519 - require hardened derivation
+                throw "Unhardened derivation unsupported";
+            }
+            },
+            this as HDNode,
+        );
+    }
 }
 
 async function main() {
@@ -102,10 +93,12 @@ async function main() {
 
     // let bip32Node = bip32.fromSeed(Buffer.from(seed, 'utf8'));
 
-    let node: HDNode = HDNode.fromSeed(Buffer.from(params.seed, 'hex'), crypto.SECP256K1);
-    console.log(node.privateKey.toString('hex'));
-    let child0 = node.derive(0 + HARDENED);
-    console.log(child0.privateKey.toString('hex'));
+    let node: HDNode = HDNode.fromSeed(Buffer.from(tests.ed25519[0].seed, 'hex'), crypto.ED25519);
+    console.log(`Master derivation:\n\tExpected: ${tests.ed25519[0].derivations[0].private}\n\tResult: ${node.privateKey.toString('hex')}`);
+    // let child0 = node.derive(0 + HARDENED);
+    // console.log(`Child0 derivation:\n\tExpected: ${tests.ed25519[0].derivations[1].private}\n\tResult: ${child0.privateKey.toString('hex')}`);
+    let child01 = node.derivePath(tests.ed25519[0].derivations[2].path);
+    console.log(`Child01 derivation:\n\tExpected: ${tests.ed25519[0].derivations[2].private}\n\tResult: ${child01.privateKey.toString('hex')}`);
 }
 
 main();
