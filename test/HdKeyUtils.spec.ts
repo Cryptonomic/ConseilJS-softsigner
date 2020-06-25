@@ -75,7 +75,7 @@ const ed25519TestVector2 = {
     ]
 };
 
-describe('ed25519 test vectors', () => {
+describe('SLIP10 ed25519 test vectors', () => {
     it('Trezor test vector 1', async () => {
         const rootNode = await HDKeyUtils.fromSeed(Buffer.from(ed25519TestVector1.seed, 'hex'), CryptoUtils.ed25519);
         expect(rootNode.privateKey!.toString('hex')).to.equal(ed25519TestVector1.private);
@@ -96,5 +96,11 @@ describe('ed25519 test vectors', () => {
 
             expect(n.privateKey!.toString('hex')).to.equal(sample.private);
         }
+    });
+});
+
+describe('Failure tests', () => {
+    it('Invalid derivation path failures', async () => {
+        // TODO
     });
 });

@@ -14,8 +14,7 @@ export namespace HDKeyUtils {
      */
     export async function derive(node: HDNode, index: number): Promise<HDNode> {
         // only support curve ed25519 - hardened derivation required
-        if (node.curve.bip32Name === BIP32Name.ED25519 && !(index & HARDENED)) 
-            throw "Unhardened derivation unsupported";
+        if (node.curve.bip32Name === BIP32Name.ED25519 && !(index & HARDENED)) { throw new Error('ED25519 derivation requires hardened paths'); }
 
         // data = 0x00 || ser256(kpar) || ser32(index)
         const data = Buffer.allocUnsafe(1 + 32 + 4);
