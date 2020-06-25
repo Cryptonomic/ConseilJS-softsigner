@@ -92,13 +92,11 @@ export namespace CryptoUtils {
     }
 
     export interface CurveInfo {
-        curveName: string,
         bip32Name: BIP32Name;
         publicKey(privateKey: Buffer): Promise<Buffer>;
     }
 
     export const ed25519: CurveInfo = {
-        curveName: 'ed25519',
         bip32Name: BIP32Name.ED25519,
         async publicKey(privateKey: Buffer): Promise<Buffer> {
             return await wrapper.publickey(privateKey);
