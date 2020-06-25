@@ -9,7 +9,7 @@
     "dist"
   ],
   "scripts": {
-    "test": "mocha --require ts-node/register \"test/**/*.spec.ts\"",
+    "test": "mocha --require ts-node/register \"test/**/HDKeyUtils.spec.ts\"",
     "integration-test": "mocha --require ts-node/register --full-trace -t 600000 -b false \"integration_test/**/*.spec.ts\"",
     "format": "eslint --fix-dry-run src/*/*.ts",
     "coverage": "nyc mocha \"test/**/*.spec.ts\" || nyc report | coveralls",
@@ -63,8 +63,11 @@
     "instrument": true
   },
   "dependencies": {
+    "bignumber.js": "9.0.0",
+    "bip32": "2.0.5",
     "bip39": "3.0.2",
     "conseiljs": "5.0.2-beta.2",
+    "create-hmac": "1.1.7",
     "libsodium-wrappers-sumo": "0.7.6"
   },
   "devDependencies": {

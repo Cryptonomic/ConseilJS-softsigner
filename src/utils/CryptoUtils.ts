@@ -1,4 +1,7 @@
-import * as createHMAC from 'create-hmac';
+import createHmac from 'create-hmac';
+
+import { BIP32Name, CurveInfo } from './types'
+
 const wrapper = require('./WrapperWrapper');
 
 /**
@@ -84,18 +87,6 @@ export namespace CryptoUtils {
         return await wrapper.checkSignature(signature, payload, publicKey);
     }
 
-
-    export enum BIP32Name {
-        SECP256K1 = "Bitcoin seed",
-        ED25519 = "ed25519 seed",
-        NISTP256 = "Nist256p1 seed"
-    }
-
-    export interface CurveInfo {
-        bip32Name: BIP32Name;
-        publicKey(privateKey: Buffer): Promise<Buffer>;
-    }
-
     export const ed25519: CurveInfo = {
         bip32Name: BIP32Name.ED25519,
         async publicKey(privateKey: Buffer): Promise<Buffer> {
@@ -104,8 +95,6 @@ export namespace CryptoUtils {
     }
 
     export function hmacSHA512(key: Buffer, data: Buffer): Buffer {
-        return createHMAC('sha512', key)
-            .update(data)
-            .digest();
+        return createHmac('sha512', key).update(data).digest();
     }
 }
