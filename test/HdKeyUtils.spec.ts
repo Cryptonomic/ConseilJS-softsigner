@@ -6,13 +6,11 @@ import { HDKeyUtils } from '../src/HdKeyUtils';
 // taken from https://github.com/satoshilabs/slips/blob/master/slip-0010.md#test-vector-1-for-ed25519
 const ed25519TestVector1 = {
     "seed": "000102030405060708090a0b0c0d0e0f",
+    "chainCode": "90046a93de5380a72b5e45010748567d5ea02bbf6522f979e05c0d8d8ca9fffb",
+    "private": "2b4be7f19ee27bbf30c667b642d5f4aa69fd169872f8fc3059c08ebae2eb19e7",
+    "public": "00a4b2856bfec510abab89753fac1ac0e1112364e7d250545963f135f2a33188ed",
     "derivations": [
-        {    
-            "path": "m",
-            "chainCode": "90046a93de5380a72b5e45010748567d5ea02bbf6522f979e05c0d8d8ca9fffb",
-            "private": "2b4be7f19ee27bbf30c667b642d5f4aa69fd169872f8fc3059c08ebae2eb19e7",
-            "public": "00a4b2856bfec510abab89753fac1ac0e1112364e7d250545963f135f2a33188ed"
-        }, {
+        {
             "path": "m/0'",
             "chainCode": "8b59aa11380b624e81507a27fedda59fea6d0b779a778918a2fd3590e16e9c69",
             "private": "68e0fe46dfb67e368c75379acec591dad19df3cde26e63b93a8e704f1dade7a3",
@@ -44,13 +42,11 @@ const ed25519TestVector1 = {
 // taken from https://github.com/satoshilabs/slips/blob/master/slip-0010.md#test-vector-2-for-ed25519
 const ed25519TestVector2 = {
     "seed": "fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542",
+    "chainCode": "ef70a74db9c3a5af931b5fe73ed8e1a53464133654fd55e7a66f8570b8e33c3b",
+    "private": "171cb88b1b3c1db25add599712e36245d75bc65a1a5c9e18d76f9f2b1eab4012",
+    "public": "008fe9693f8fa62a4305a140b9764c5ee01e455963744fe18204b4fb948249308a",
     "derivations": [
-        {    
-            "path": "m",
-            "chainCode": "ef70a74db9c3a5af931b5fe73ed8e1a53464133654fd55e7a66f8570b8e33c3b",
-            "private": "171cb88b1b3c1db25add599712e36245d75bc65a1a5c9e18d76f9f2b1eab4012",
-            "public": "008fe9693f8fa62a4305a140b9764c5ee01e455963744fe18204b4fb948249308a"
-        }, {
+        {
             "path": "m/0'",
             "chainCode": "0b78a3226f915c082bf118f83618a618ab6dec793752624cbeb622acb562862d",
             "private": "1559eb2bbec5790b0c65d8693e4d0875b1747f4970ae8b650486ed7470845635",
@@ -82,21 +78,23 @@ const ed25519TestVector2 = {
 describe('ed25519 test vectors', () => {
     it('Trezor test vector 1', async () => {
         const rootNode = await HDKeyUtils.fromSeed(Buffer.from(ed25519TestVector1.seed, 'hex'), CryptoUtils.ed25519);
+        expect(rootNode.privateKey!.toString('hex')).to.equal(ed25519TestVector1.private);
+
         for (const sample of ed25519TestVector1.derivations) {
             const n = await HDKeyUtils.derivePath(rootNode, sample.path);
 
             expect(n.privateKey!.toString('hex')).to.equal(sample.private);
-            expect(n.publicKey!.toString('hex')).to.equal(sample.public);
         }
     });
 
     it('Trezor test vector 2', async () => {
         const rootNode = await HDKeyUtils.fromSeed(Buffer.from(ed25519TestVector2.seed, 'hex'), CryptoUtils.ed25519);
-        for (const sample of ed25519TestVector1.derivations) {
+        expect(rootNode.privateKey!.toString('hex')).to.equal(ed25519TestVector2.private);
+
+        for (const sample of ed25519TestVector2.derivations) {
             const n = await HDKeyUtils.derivePath(rootNode, sample.path);
 
             expect(n.privateKey!.toString('hex')).to.equal(sample.private);
-            expect(n.publicKey!.toString('hex')).to.equal(sample.public);
         }
     });
 });
