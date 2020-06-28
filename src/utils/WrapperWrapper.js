@@ -25,7 +25,8 @@ const keys = async (seed) => {
 
 const publickey = async (sk) => {
     await sodiumsumo.ready;
-    return sodiumsumo.crypto_sign_ed25519_sk_to_pk(sk);
+    const seed = sodiumsumo.crypto_sign_ed25519_sk_to_seed(sk)
+    return sodiumsumo.crypto_sign_seed_keypair(seed, '');
 }
 
 const pwhash = async (passphrase, salt) => {
