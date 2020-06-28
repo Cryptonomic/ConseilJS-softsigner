@@ -101,6 +101,11 @@ describe('SLIP10 ed25519 test vectors', () => {
 
 describe('Failure tests', () => {
     it('Invalid derivation path failures', async () => {
-        // TODO
+        const rootNode = await HDKeyUtils.fromSeed(Buffer.from(ed25519TestVector1.seed, 'hex'), CryptoUtils.ed25519);
+
+        await expect(HDKeyUtils.derivePath(rootNode, `m/44'/1729'/0'/0`)).to.be.rejectedWith('ED25519 derivation requires hardened paths');
+        await expect(HDKeyUtils.derivePath(rootNode, `c0ff33`)).to.be.rejectedWith('Invalid derivation path');
+        await expect(HDKeyUtils.derive(rootNode, 0)).to.be.rejectedWith('ED25519 derivation requires hardened paths');
+        
     });
 });
