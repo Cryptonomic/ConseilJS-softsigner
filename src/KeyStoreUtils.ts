@@ -45,14 +45,17 @@ export namespace KeyStoreUtils {
     /**
      * Produced a keypair from the provided seed and optional password using the ED25519 curve.
      * 
-     * @param mnemonic Space-sepatd BIP39 words
-     * @param password 
-     * @param pkh 
-     * @param derivationPath 
+     * @param {string} mnemonic Space-separated BIP39 words, required.
+     * @param {string} password Optional password, if none provided, defaults to empty string
+     * @param {string} pkh Optional public key hash (tz1 address)
+     * @param {string} derivationPath Optional derivation path
+     * @param {boolean} validate Mnemonic validation flag, defaults to true
      */
-    export async function restoreIdentityFromMnemonic(mnemonic: string, password: string = '', pkh?: string, derivationPath?: string): Promise<KeyStore> {
-        if (![12, 15, 18, 21, 24].includes(mnemonic.split(' ').length)) { throw new Error('Invalid mnemonic length.'); }
-        if (!bip39.validateMnemonic(mnemonic)) { throw new Error('The given mnemonic could not be validated.'); }
+    export async function restoreIdentityFromMnemonic(mnemonic: string, password: string = '', pkh?: string, derivationPath?: string, validate: boolean = true): Promise<KeyStore> {
+        if (validate) {
+            if (![12, 15, 18, 21, 24].includes(mnemonic.split(' ').length)) { throw new Error('Invalid mnemonic length.'); }
+            if (!bip39.validateMnemonic(mnemonic)) { throw new Error('The given mnemonic could not be validated.'); }
+        }
 
         const seed = (await bip39.mnemonicToSeed(mnemonic, password)).slice(0, 32);
         const keys = await generateKeys(seed);
