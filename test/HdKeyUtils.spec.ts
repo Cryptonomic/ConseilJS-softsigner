@@ -1,8 +1,14 @@
-import { expect } from 'chai';
+import chai, { expect } from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+
+import * as bip39 from 'bip39';
+import { TezosMessageUtils } from 'conseiljs';
 
 import { CryptoUtils } from '../src/utils/CryptoUtils';
 import { HDKeyUtils } from '../src/HdKeyUtils';
 import { KeyStoreUtils } from '../src/KeyStoreUtils';
+
+chai.use(chaiAsPromised);
 
 // taken from https://github.com/satoshilabs/slips/blob/master/slip-0010.md#test-vector-1-for-ed25519
 const ed25519TestVector1 = {
@@ -78,9 +84,8 @@ const ed25519TestVector2 = {
 
 // Test vector generated from Ledger Nano X (Secure Element v1.2.4-1, Microcontroller v2.8)
 const ledgerTestVector = {
-    "mnemonic": "offer input range bread tortoise antenna model before secret dish tongue perfect able badge phrase any swim special eager kangaroo skill winner kiss million",
-    "passphrase": "0123",
-    "seed": "89043cc13bc1a1e5828070ff823d3e0387d354b6d35ed8fba4b5a6b4f8736108",
+    mnemonic: "offer input range bread tortoise antenna model before secret dish tongue perfect able badge phrase any swim special eager kangaroo skill winner kiss million",
+    passphrase: "0123",
     "derivations": [
         {
             path: "44'/1729'",
@@ -146,16 +151,17 @@ describe('SLIP10 ed25519 test vectors', () => {
 
 describe('Ledger Tezos paths test vector', () => {
     it('Ledger Tezos paths test vector', async () => {
-        const rootNode = await HDKeyUtils.fromSeed(Buffer.from(ledgerTestVector.seed, 'hex'), CryptoUtils.ed25519);
+        const seed = (await bip39.mnemonicToSeed(ledgerTestVector.mnemonic, ledgerTestVector.passphrase)).slice(0, 32);
+        const rootNode = await HDKeyUtils.fromSeed(seed, CryptoUtils.ed25519);
 
         for (const sample of ledgerTestVector.derivations) {
             const n = await HDKeyUtils.derivePath(rootNode, sample.path);
-            const keystore = await KeyStoreUtils.restoreIdentityFromSecretKey(n.privateKey.toString('hex'));
+            const sk = TezosMessageUtils.readKeyWithHint(Buffer.concat([n.privateKey, n.chainCode]), 'edsk');
+            const keystore = await KeyStoreUtils.restoreIdentityFromSecretKey(sk);
             expect(keystore.publicKeyHash).to.equal(sample.publicKeyHash);
         }
     });
 });
-
 
 describe('Failure tests', () => {
     it('Invalid derivation path failures', async () => {
@@ -164,6 +170,5 @@ describe('Failure tests', () => {
         await expect(HDKeyUtils.derivePath(rootNode, `m/44'/1729'/0'/0`)).to.be.rejectedWith('ED25519 derivation requires hardened paths');
         await expect(HDKeyUtils.derivePath(rootNode, `c0ff33`)).to.be.rejectedWith('Invalid derivation path');
         await expect(HDKeyUtils.derive(rootNode, 0)).to.be.rejectedWith('ED25519 derivation requires hardened paths');
-        
     });
 });
