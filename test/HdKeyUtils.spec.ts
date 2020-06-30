@@ -2,6 +2,7 @@ import { expect } from 'chai';
 
 import { CryptoUtils } from '../src/utils/CryptoUtils';
 import { HDKeyUtils } from '../src/HdKeyUtils';
+import { KeyStoreUtils } from '../src/KeyStoreUtils';
 
 // taken from https://github.com/satoshilabs/slips/blob/master/slip-0010.md#test-vector-1-for-ed25519
 const ed25519TestVector1 = {
@@ -75,6 +76,50 @@ const ed25519TestVector2 = {
     ]
 };
 
+// Test vector generated from Ledger Nano X (Secure Element v1.2.4-1, Microcontroller v2.8)
+const ledgerTestVector = {
+    "mnemonic": "offer input range bread tortoise antenna model before secret dish tongue perfect able badge phrase any swim special eager kangaroo skill winner kiss million",
+    "passphrase": "0123",
+    "seed": "89043cc13bc1a1e5828070ff823d3e0387d354b6d35ed8fba4b5a6b4f8736108",
+    "derivations": [
+        {
+            path: "44'/1729'",
+            public: '02191807d59ab6c8587665f899ff6499a8e3bdd89bf04687f4768a101296448358',
+            publicKeyHash: 'tz1gzULUaujk7hmgePtaQLh1FYMXLybumEvz'
+        },
+        {
+            path: "44'/1729'/0'",
+            public: '020f042115e93de0c1a81c4eaeeb6df14eba498a5d35da345ddc6fe9da7141d59c',
+            publicKeyHash: 'tz1edpEAejAuhWsQVGNNQExmjnFvvMLdoR7r'
+        },
+        {
+            path: "44'/1729'/0'/0'",
+            public: '0217341727bf0497d50b59a88f334bd000c224dcb41ed8c034de7b174681e2c3b6',
+            publicKeyHash: 'tz1cJ3c6ZxdUDdvKPGYh8HiGr4ZTFg9fvk8D'
+        },
+        {
+            path: "44'/1729'/0'/0'/0'",
+            public: '028551e497c56ce28331172442284c395e218e95e5c00cc243478b7a1119327bf6',
+            publicKeyHash: 'tz1Suh9rCywdGKfijMc2UdxSHvRvoAczmW2z'
+        },
+        {
+            path: "44'/1729'/2147483647'",
+            public: '0263062127bd0b27dbfba16f053701e794cc9e8888d40f90f3e042ce28a7f07bf3',
+            publicKeyHash: 'tz1SfrAC7bXSpo4LTvngDXcuJHBV3hCFb4bT'
+        },
+        {
+            path: "44'/1729'/2147483647'/1'",
+            public: '0287676f2bf5224d9feea3825a565c16521e982626094631a8dcabe8416f50a3a6',
+            publicKeyHash: 'tz1cTBDJrfYU9t8X7PRagws5o3jT33HsjFBF'
+        },
+        {
+            path: "44'/1729'/2147483647'/1'/2147483646'",
+            public: '0201ce46928a4f8555fdcac9f202483077cc926db02cdf05d57555d68eb74a2ada',
+            publicKeyHash: 'tz1iWtQqrN87VYz9tiQPHu5pDXw4ovM8RJCS'
+        }
+    ]
+}
+
 describe('SLIP10 ed25519 test vectors', () => {
     it('Trezor test vector 1', async () => {
         const rootNode = await HDKeyUtils.fromSeed(Buffer.from(ed25519TestVector1.seed, 'hex'), CryptoUtils.ed25519);
@@ -98,6 +143,19 @@ describe('SLIP10 ed25519 test vectors', () => {
         }
     });
 });
+
+describe('Ledger Tezos paths test vector', () => {
+    it('Ledger Tezos paths test vector', async () => {
+        const rootNode = await HDKeyUtils.fromSeed(Buffer.from(ledgerTestVector.seed, 'hex'), CryptoUtils.ed25519);
+
+        for (const sample of ledgerTestVector.derivations) {
+            const n = await HDKeyUtils.derivePath(rootNode, sample.path);
+            const keystore = await KeyStoreUtils.restoreIdentityFromSecretKey(n.privateKey.toString('hex'));
+            expect(keystore.publicKeyHash).to.equal(sample.publicKeyHash);
+        }
+    });
+});
+
 
 describe('Failure tests', () => {
     it('Invalid derivation path failures', async () => {
