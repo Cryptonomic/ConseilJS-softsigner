@@ -30,7 +30,7 @@ registerLogger(logger);
 registerFetch(fetch);
 
 let signer: Signer;
-const keyStore = await KeyStoreUtils.restoreIdentityFromSecretKey ('edskRgu8wHxjwayvnmpLDDijzD3VZDoAH7ZLqJWuG4zg7LbxmSWZWhtkSyM5Uby41rGfsBGk4iPKWHSDniFyCRv3j7YFCknyHH');
+const keyStore = await KeyStoreUtils.restoreIdentityFromSecretKey('edskRgu8wHxjwayvnmpLDDijzD3VZDoAH7ZLqJWuG4zg7LbxmSWZWhtkSyM5Uby41rGfsBGk4iPKWHSDniFyCRv3j7YFCknyHH');
 signer = new SoftSigner(TezosMessageUtils.writeKeyWithHint(keyStore.secretKey, 'edsk'));
 ```
 
@@ -45,7 +45,17 @@ TBD
 ## Use with Web
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/cryptonomic/conseiljs-softsigner/dist-web/conseiljs-softsigner.min.js"
-        integrity="sha384-16/d/iwMed6WjxF0zP8FMdq7+1UG10f8fNj9AJuzFXJMlzj1n9vWzBtgLMHvGpzU"
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/gh/cryptonomic/conseiljs-softsigner/dist-web/conseiljs-softsigner.min.js"
+        integrity="sha384-oLCy/mvhbYz8Wj2mdlGnitbb2RkRhcGt0T3h51CxFOxz2ySk+X3XWI7SLY1YTYhT"
         crossorigin="anonymous"></script>
+        <script>
+            //
+        </script>
+</head>
+<body>
+    ...
+</body>
+</html>
 ```

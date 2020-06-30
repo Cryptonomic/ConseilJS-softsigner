@@ -10,7 +10,7 @@ const webConfig = {
     output: {
         path: path.resolve(__dirname, './dist-web'),
         filename: 'conseiljs-softsigner.min.js',
-        library: 'conseiljs',
+        library: 'conseiljs-softsigner',
         libraryTarget: 'umd'
     },
     resolve: {
