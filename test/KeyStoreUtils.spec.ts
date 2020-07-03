@@ -15,13 +15,20 @@ describe('KeyStoreUtils tests', () => {
         expect(KeyStoreUtils.generateMnemonic(160).split(' ').length).to.equal(15);
     });
 
-    it('generateIdentity', async () => {
-        const result = await KeyStoreUtils.generateIdentity(0, '', 'resist winner shift attract issue penalty feed disease guess ridge grace warfare brave cause jar track exhibit movie seminar light broken light few tomato');
+    it('generateIdentity with default parameters', async () => {
+        const result = await KeyStoreUtils.generateIdentity();
 
-        expect(result.publicKeyHash).to.equal('tz1WRm1WMpioh4Gm1eopgvudaEoY6wX7cTTg');
+        expect(result.publicKeyHash).to.exist;
+        expect(result.seed).to.exist;
     });
 
-    it('generateIdentity with password', async () => {
+    it('generateIdentity with mnemonic', async () => {
+        const result = await KeyStoreUtils.generateIdentity(0, '', 'slender young beauty smooth skin embrace firm body romance sleep head home');
+
+        expect(result.publicKeyHash).to.equal('tz1UskuoYvJkkwnJ28gH3rfPirQbuDtRjfjc');
+    });
+
+    it('generateIdentity with mnemonic & password', async () => {
         const result = await KeyStoreUtils.generateIdentity(0, 'Nachos Tacos', 'resist winner shift attract issue penalty feed disease guess ridge grace warfare brave cause jar track exhibit movie seminar light broken light few tomato');
 
         expect(result.publicKeyHash).to.equal('tz1d6c6SVPfyoEodJqXNLPtknqoJMSRVYn8n');
