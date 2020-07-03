@@ -48,7 +48,12 @@ export class SoftSigner implements Signer {
 
     private async getKey() {
         if (!this._unlocked) {
-            this._key = await CryptoUtils.decryptMessage(this._secretKey, this._passphrase, this._salt);
+            const k = await CryptoUtils.decryptMessage(this._secretKey, this._passphrase, this._salt);
+            if (this._lockTimout == 0) {
+                return k;
+            }
+
+            this._key = k;
             this._unlocked = true;
             if (this._lockTimout > 0) {
                 setTimeout(() => {
