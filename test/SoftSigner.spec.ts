@@ -10,7 +10,7 @@ use(chaiAsPromised);
 let signer: Signer;
 
 describe('SoftSigner tests', () => {
-    it('constructor with key encryption', async () => {
+    it('constructor without key encryption', async () => {
         const keyStore = await KeyStoreUtils.restoreIdentityFromSecretKey('edskRgu8wHxjwayvnmpLDDijzD3VZDoAH7ZLqJWuG4zg7LbxmSWZWhtkSyM5Uby41rGfsBGk4iPKWHSDniFyCRv3j7YFCknyHH');
         
         signer = await SoftSigner.createSigner(TezosMessageUtils.writeKeyWithHint(keyStore.secretKey, 'edsk'), -1);
@@ -25,8 +25,6 @@ describe('SoftSigner tests', () => {
         await (new Promise(resolve => setTimeout(resolve, 6000)));
 
         expect(signer).to.be.not.null;
-
-        console.log(`running SoftSigner tests with ${JSON.stringify(keyStore)}`);
     });
 
     it('sign', async () => {
