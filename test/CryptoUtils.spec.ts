@@ -5,7 +5,6 @@ import { TezosMessageUtils } from 'conseiljs';
 
 import { CryptoUtils } from '../src/utils/CryptoUtils';
 import { KeyStoreUtils } from '../src/KeyStoreUtils';
-import { SoftSigner } from '../src/SoftSigner';
 
 describe('encryptMessage() and decryptMessage()', () => {
     it('should correctly encrypt and decrypt text', async () => {
@@ -72,7 +71,6 @@ describe('generateKeys() and recoverPublicKey()', () => {
 
     it('sign a message with secret key, verify signature with public key (Tezos encoding)', async () => {
         const keyStore = await KeyStoreUtils.restoreIdentityFromSecretKey('edskRqLyhpmvk7PGg6zvbEV3n325UsLF2qKuNrDHit4zbJtqEpBE925Jdx13d7ax1uiewmg4FR2TVisnuDL6epbips9NMLtsMc');
-        const signer = new SoftSigner(TezosMessageUtils.writeKeyWithHint(keyStore.secretKey, 'edsk'));
         const privateKey = TezosMessageUtils.writeKeyWithHint(keyStore.secretKey, 'edsk');
         const publicKey = TezosMessageUtils.writeKeyWithHint(keyStore.publicKey, 'edpk');
 

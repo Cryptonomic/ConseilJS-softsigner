@@ -118,17 +118,25 @@ export namespace KeyStoreUtils {
     }
 
     /**
-     * Convenience function that uses Tezos nomenclature to check signature of arbitrary text.
+     * Convenience function that uses Tezos nomenclature to check signature of arbitrary text. This method supports the ed25519 curve.
      * 
-     * @param signature 
-     * @param message 
-     * @param publicKey 
+     * @param signature Message signature, prefixed with `edsig`.
+     * @param message Plain text of the message in UTF-8 encoding.
+     * @param publicKey Public key to verify the signature against, prefixed with `edpk`.
+     * @param prehash If true, a 32-byte blake2s message hash is used for verification instead of the plain message. Default is false.
      * * @returns {Promise<boolean>}
      */
-    export async function checkTextSignature(signature: string, message: string, publicKey: string): Promise<boolean> {
+    export async function checkTextSignature(signature: string, message: string, publicKey: string, prehash = false): Promise<boolean> {
+        let messageBytes: Buffer;
+        if (prehash) {
+            messageBytes = TezosMessageUtils.simpleHash(Buffer.from(message, 'utf8'), 32);
+        } else {
+            messageBytes = Buffer.from(message, 'utf8');
+        }
+
         const sig = TezosMessageUtils.writeSignatureWithHint(signature, 'edsig');
         const pk = TezosMessageUtils.writeKeyWithHint(publicKey, 'edpk');
 
-        return await CryptoUtils.checkSignature(sig, Buffer.from(message, 'utf8'), pk);
+        return await CryptoUtils.checkSignature(sig, messageBytes, pk);
     }
 }
