@@ -82,6 +82,24 @@ const ed25519TestVector2 = {
     ]
 };
 
+// From Trezor Connect's test suite: https://github.com/trezor/connect/blob/31d4bb595bed72ef666f0d5c8aacb85f0e55588a/tests/__fixtures__/tezosGetAddress.js
+// seed generated using bip39.js
+const trezorTZ1TestVector = {
+    "mnemonic": "alcohol woman abuse must during monitor noble actual mixed trade anger aisle",
+    "seed": "1ebf38d0b1fc10ac12059141276c1b8b7a410ba43d04bbe9f3a371d884a304400b6a39fda34e5b282a3717663fb337954df3dadf802a4cba3d008d5e2988f70a",
+    "derivations": [
+        {
+            "path": "m/44'/1729'/0'",
+            "address": "tz1ckrgqGGGBt4jGDmwFhtXc1LNpZJUnA9F2"
+        },
+        {
+            "path": "m/44'/1729'/1'",
+            "address": "tz1cTfmc5uuBr2DmHDgkXTAoEcufvXLwq5TP"
+        }
+    ]
+
+}
+
 // Test vector generated from Ledger Nano X (Secure Element v1.2.4-1, Microcontroller v2.8)
 const ledgerTestVector = {
     mnemonic: "offer input range bread tortoise antenna model before secret dish tongue perfect able badge phrase any swim special eager kangaroo skill winner kiss million",
