@@ -1,7 +1,14 @@
 import * as GeneratePassword from 'generate-password'
-import { Signer, SignerCurve, TezosMessageUtils } from 'conseiljs';
+import { Signer, TezosMessageUtils } from 'conseiljs';
 
 import { CryptoUtils } from './utils/CryptoUtils'
+
+// TODO(keefertaylor): Remove this enum after https://github.com/Cryptonomic/ConseilJS/pull/308 is merged and released.
+export enum SignerCurve {
+    ED25519,
+    SECP256K1,
+    SECP256R1
+}
 
 /**
  * libsodium/ed25519
