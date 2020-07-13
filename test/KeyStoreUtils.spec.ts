@@ -110,12 +110,16 @@ describe('KeyStoreUtils tests', () => {
     });
 
     it('checkTextSignature, hashed', async () => {
-        const message = 'Tacos Burritos';
-        const keyStore = await KeyStoreUtils.restoreIdentityFromSecretKey('edskRgu8wHxjwayvnmpLDDijzD3VZDoAH7ZLqJWuG4zg7LbxmSWZWhtkSyM5Uby41rGfsBGk4iPKWHSDniFyCRv3j7YFCknyHH');
-        const sig = 'edsigtmoSkpMujSVYXH6zxSaZyiH27qYscBezFWNnDohoBoKdmY9c4Jk8EhdNGok9riQGLu1MTnXM9y5om2cRAUCdFtXKQKp57f';
+        let publicKey = (await KeyStoreUtils.restoreIdentityFromSecretKey('edskRgu8wHxjwayvnmpLDDijzD3VZDoAH7ZLqJWuG4zg7LbxmSWZWhtkSyM5Uby41rGfsBGk4iPKWHSDniFyCRv3j7YFCknyHH')).publicKey;
+        let message = 'Tacos Burritos';
+        let sig = 'edsigtmoSkpMujSVYXH6zxSaZyiH27qYscBezFWNnDohoBoKdmY9c4Jk8EhdNGok9riQGLu1MTnXM9y5om2cRAUCdFtXKQKp57f';
+        let result = await KeyStoreUtils.checkTextSignature(sig, message, publicKey, true);
+        expect(result).to.equal(true);
 
-        const result = await KeyStoreUtils.checkTextSignature(sig, message, keyStore.publicKey, true);
-
+        publicKey = 'edpku976gpuAD2bXyx1XGraeKuCo1gUZ3LAJcHM12W1ecxZwoiu22R';
+        message = 'test';
+        sig = 'edsigtzLBGCyadERX1QsYHKpwnxSxEYQeGLnJGsSkHEsyY8vB5GcNdnvzUZDdFevJK7YZQ2ujwVjvQZn62ahCEcy74AwtbA8HuN';
+        result = await KeyStoreUtils.checkTextSignature(sig, message, publicKey, true);
         expect(result).to.equal(true);
     });
 });
