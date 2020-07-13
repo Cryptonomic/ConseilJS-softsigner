@@ -3,6 +3,13 @@ import { Signer, TezosMessageUtils } from 'conseiljs';
 
 import { CryptoUtils } from './utils/CryptoUtils'
 
+// TODO(keefertaylor): Remove this enum after https://github.com/Cryptonomic/ConseilJS/pull/308 is merged and released.
+export enum SignerCurve {
+    ED25519,
+    SECP256K1,
+    SECP256R1
+}
+
 /**
  * libsodium/ed25519
  */
@@ -33,6 +40,10 @@ export class SoftSigner implements Signer {
         if (validity < 0) {
             this._key = secretKey;
         }
+    }
+
+    public getSignerCurve(): SignerCurve {
+        return SignerCurve.ED25519
     }
 
     public static async createSigner(secretKey: Buffer, validity: number = 60): Promise<Signer> {
