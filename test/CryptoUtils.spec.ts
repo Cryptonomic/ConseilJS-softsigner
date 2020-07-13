@@ -50,20 +50,20 @@ describe('generateKeys() and recoverPublicKey()', () => {
     });
 
     it('recover public key from secret key', async () => {
-        const privateKey = TezosMessageUtils.writeKeyWithHint('edskRqLyhpmvk7PGg6zvbEV3n325UsLF2qKuNrDHit4zbJtqEpBE925Jdx13d7ax1uiewmg4FR2TVisnuDL6epbips9NMLtsMc', 'edsk');
-        const keys = await CryptoUtils.recoverPublicKey(privateKey);
+        const secretKey = TezosMessageUtils.writeKeyWithHint('edskRqLyhpmvk7PGg6zvbEV3n325UsLF2qKuNrDHit4zbJtqEpBE925Jdx13d7ax1uiewmg4FR2TVisnuDL6epbips9NMLtsMc', 'edsk');
+        const keys = await CryptoUtils.recoverPublicKey(secretKey);
         const publicKeyHash = TezosMessageUtils.computeKeyHash(keys.publicKey, 'tz1');
 
         expect(publicKeyHash).to.equal('tz1io3eJUT6C3heVaewJiDio18QzkNNHaE2v');
     });
 
     it('sign a message with secret key, verify signature with public key', async () => {
-        const privateKey = TezosMessageUtils.writeKeyWithHint('edskRqLyhpmvk7PGg6zvbEV3n325UsLF2qKuNrDHit4zbJtqEpBE925Jdx13d7ax1uiewmg4FR2TVisnuDL6epbips9NMLtsMc', 'edsk');
-        const keys = await CryptoUtils.recoverPublicKey(privateKey);
+        const secretKey = TezosMessageUtils.writeKeyWithHint('edskRqLyhpmvk7PGg6zvbEV3n325UsLF2qKuNrDHit4zbJtqEpBE925Jdx13d7ax1uiewmg4FR2TVisnuDL6epbips9NMLtsMc', 'edsk');
+        const keys = await CryptoUtils.recoverPublicKey(secretKey);
         const publicKey = keys.publicKey;
 
         const message = Buffer.from('Tacos Nachos Burritos Guacamole', 'utf8');
-        const messageSig = await CryptoUtils.signDetached(message, privateKey);
+        const messageSig = await CryptoUtils.signDetached(message, secretKey);
         const check = await CryptoUtils.checkSignature(messageSig, message, publicKey);
 
         expect(check).to.be.true;
@@ -71,11 +71,11 @@ describe('generateKeys() and recoverPublicKey()', () => {
 
     it('sign a message with secret key, verify signature with public key (Tezos encoding)', async () => {
         const keyStore = await KeyStoreUtils.restoreIdentityFromSecretKey('edskRqLyhpmvk7PGg6zvbEV3n325UsLF2qKuNrDHit4zbJtqEpBE925Jdx13d7ax1uiewmg4FR2TVisnuDL6epbips9NMLtsMc');
-        const privateKey = TezosMessageUtils.writeKeyWithHint(keyStore.secretKey, 'edsk');
+        const secretKey = TezosMessageUtils.writeKeyWithHint(keyStore.secretKey, 'edsk');
         const publicKey = TezosMessageUtils.writeKeyWithHint(keyStore.publicKey, 'edpk');
 
         const message = Buffer.from('Tacos Nachos Burritos Guacamole', 'utf8');
-        const messageSig = await CryptoUtils.signDetached(message, privateKey);
+        const messageSig = await CryptoUtils.signDetached(message, secretKey);
         const check = await CryptoUtils.checkSignature(messageSig, message, publicKey);
 
         expect(check).to.be.true;
