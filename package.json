@@ -64,7 +64,7 @@
   },
   "dependencies": {
     "bip39": "3.0.2",
-    "conseiljs": "5.0.2-beta.3",
+    "conseiljs": "5.0.3-beta.2",
     "generate-password": "1.5.1",
     "libsodium-wrappers-sumo": "0.7.6"
   },
