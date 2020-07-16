@@ -89,12 +89,18 @@ export namespace CryptoUtils {
 
     export const ed25519: CurveInfo = {
         bip32Name: BIP32Name.ED25519,
-        async publicKey(privateKey: Buffer): Promise<Buffer> {
-            return await wrapper.publickey(privateKey);
+        async publicKey(secretKey: Buffer): Promise<Buffer> {
+            // let pk = Buffer.from((await wrapper.publickey(secretKey)).publicKey.buffer, 'hex'); // for sk_to_seed -> seed_keypair
+            let pk = Buffer.from((await wrapper.publickey(secretKey)).buffer); // for sk_to_pk
+            return pk;
         }
     }
 
     export function hmacSHA512(key: Buffer, data: Buffer): Buffer {
         return createHmac('sha512', key).update(data).digest();
+    }
+
+    export function sha512(message: Buffer): Buffer {
+        return wrapper.sha512(message);
     }
 }

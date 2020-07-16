@@ -19,18 +19,25 @@ export namespace HDKeyUtils {
         // data = 0x00 || ser256(kpar) || ser32(index)
         const data = Buffer.allocUnsafe(1 + 32 + 4);
         data[0] = 0x00; // 1 bit
-        node.privateKey.copy(data, 1); // 32 bits
+        node.secretKey.copy(data, 1); // 32 bits
         data.writeUInt32BE(index, 33); // 4 bits
 
-        // create privateKey and chainCode
+        // create secretKey and chainCode
         const i = CryptoUtils.hmacSHA512(node.chainCode, data);
         const iL = i.slice(0, 32);
         const iR = i.slice(32);
 
+        // derive public key
+        const extSecretKey = await CryptoUtils.sha512(iL);
+        const _pk = await node.curve.publicKey(extSecretKey);
+        const pk = Buffer.concat([Buffer.from('00', 'hex'), _pk]);
+        console.log(`extsk: ${extSecretKey.toString('hex')}\n pk: ${pk.toString('hex')}`);
+        
+
         return {
-            privateKey: iL, 
+            secretKey: iL, 
             chainCode: iR, 
-            publicKey: undefined,
+            publicKey: pk,
             curve: node.curve,
             index: index,
             depth: node.depth + 1
@@ -70,10 +77,17 @@ export namespace HDKeyUtils {
         let i = CryptoUtils.hmacSHA512(Buffer.from(curve.bip32Name, 'utf8'), seed);
         const iL = i.slice(0, 32);
         const iR = i.slice(32);
+
+        // derive public key
+        const extSecretKey = Buffer.from(await CryptoUtils.sha512(iL));
+        const _pk = await curve.publicKey(extSecretKey);
+        const pk = Buffer.concat([Buffer.from('00', 'hex'), _pk]);
+        console.log(`extsk: ${extSecretKey.toString('hex')}\n pk: ${pk.toString('hex')}`);
+        
         return {
-            privateKey: iL, 
+            secretKey: iL, 
             chainCode: iR, 
-            publicKey: undefined,
+            publicKey: pk,
             curve: curve,
             index: undefined, // undefined for master node
             depth: 0

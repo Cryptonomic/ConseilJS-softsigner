@@ -1,7 +1,7 @@
 export interface HDNode {
-    readonly privateKey: Buffer;
+    readonly secretKey: Buffer;
     readonly chainCode: Buffer;
-    readonly publicKey: Buffer | undefined;
+    publicKey: Buffer | undefined;
     readonly index: number | undefined; // undefined for master node
     readonly depth: number;
     readonly curve: CurveInfo;
@@ -15,5 +15,5 @@ export enum BIP32Name {
 
 export interface CurveInfo {
     bip32Name: BIP32Name;
-    publicKey(privateKey: Buffer): Promise<Buffer>;
+    publicKey(secretKey: Buffer): Promise<Buffer>;
 }
