@@ -147,50 +147,48 @@ const ledgerTestVector = {
 describe('SLIP10 ed25519 test vectors', () => {
     it('Trezor test vector 1', async () => {
         const rootNode = await HDKeyUtils.fromSeed(Buffer.from(ed25519TestVector1.seed, 'hex'), CryptoUtils.ed25519);
-        expect(rootNode.chainCode!.toString('hex')).to.equal(ed25519TestVector1.chainCode);
-        expect(rootNode.secretKey!.toString('hex')).to.equal(ed25519TestVector1.secretKey);
-        expect(rootNode.publicKey!.toString('hex')).to.equal(ed25519TestVector1.publicKey);
+        expect(rootNode.chainCode.toString('hex')).to.equal(ed25519TestVector1.chainCode);
+        expect(rootNode.secretKey.toString('hex')).to.equal(ed25519TestVector1.secretKey);
+        expect(rootNode.publicKey.toString('hex')).to.equal(ed25519TestVector1.publicKey);
 
         for (const sample of ed25519TestVector1.derivations) {
             const n = await HDKeyUtils.derivePath(rootNode, sample.path);
 
-            expect(n.chainCode!.toString('hex')).to.equal(sample.chainCode);
-            expect(n.secretKey!.toString('hex')).to.equal(sample.secretKey);
-            expect(n.publicKey!.toString('hex')).to.equal(sample.publicKey);
+            expect(n.chainCode.toString('hex')).to.equal(sample.chainCode);
+            expect(n.secretKey.toString('hex')).to.equal(sample.secretKey);
+            expect(n.publicKey.toString('hex')).to.equal(sample.publicKey);
         }
     });
 
     it('Trezor test vector 2', async () => {
         const rootNode = await HDKeyUtils.fromSeed(Buffer.from(ed25519TestVector2.seed, 'hex'), CryptoUtils.ed25519);
-        expect(rootNode.chainCode!.toString('hex')).to.equal(ed25519TestVector2.chainCode);
-        expect(rootNode.secretKey!.toString('hex')).to.equal(ed25519TestVector2.secretKey);
-        expect(rootNode.publicKey!.toString('hex')).to.equal(ed25519TestVector2.publicKey);
+        expect(rootNode.chainCode.toString('hex')).to.equal(ed25519TestVector2.chainCode);
+        expect(rootNode.secretKey.toString('hex')).to.equal(ed25519TestVector2.secretKey);
+        expect(rootNode.publicKey.toString('hex')).to.equal(ed25519TestVector2.publicKey);
 
         for (const sample of ed25519TestVector2.derivations) {
             const n = await HDKeyUtils.derivePath(rootNode, sample.path);
 
-            expect(n.chainCode!.toString('hex')).to.equal(sample.chainCode);
-            expect(n.secretKey!.toString('hex')).to.equal(sample.secretKey);
-            expect(n.publicKey!.toString('hex')).to.equal(sample.publicKey);
+            expect(n.chainCode.toString('hex')).to.equal(sample.chainCode);
+            expect(n.secretKey.toString('hex')).to.equal(sample.secretKey);
+            expect(n.publicKey.toString('hex')).to.equal(sample.publicKey);
         }
     });
 });
 
-// describe('Trezor TZ1 address test vector', () => {
-//     it('Trezor TZ1 address test vector', async () => {
-//         const seed = (await bip39.mnemonicToSeed(trezorTZ1TestVector.mnemonic)).slice(0, 32);
-//         const rootNode = await HDKeyUtils.fromSeed(seed, CryptoUtils.ed25519);
+describe('Trezor TZ1 address test vector', () => {
+    it('Trezor TZ1 address test vector', async () => {
+        const seed = (await bip39.mnemonicToSeed(trezorTZ1TestVector.mnemonic)).slice(0, 32);
+        const rootNode = await HDKeyUtils.fromSeed(seed, CryptoUtils.ed25519);
 
-//         for (const sample of trezorTZ1TestVector.derivations) {
-//             const n = await HDKeyUtils.derivePath(rootNode, sample.path);
-//             const sk = TezosMessageUtils.readKeyWithHint(Buffer.concat([n.chainCode, n.secretKey]), 'edsk');
-//             const keystore = await KeyStoreUtils.restoreIdentityFromSecretKey(sk);
+        for (const sample of trezorTZ1TestVector.derivations) {
+            const n = await HDKeyUtils.derivePath(rootNode, sample.path);
 
-//             expect(keystore.publicKey).to.equal(sample.publicKey);
-//             expect(keystore.publicKeyHash).to.equal(sample.publicKeyHash);
-//         }
-//     });
-// });
+            // check publicKey (need to encode)
+            // check publicKeyHash
+        }
+    });
+});
 
 describe('Ledger Tezos paths test vector', () => {
     it('Ledger Tezos paths test vector', async () => {

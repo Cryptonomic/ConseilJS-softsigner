@@ -23,17 +23,14 @@ export namespace HDKeyUtils {
         data.writeUInt32BE(index, 33); // 4 bits
 
         // create secretKey and chainCode
-        const i = CryptoUtils.hmacSHA512(node.chainCode, data);
+        const i = await CryptoUtils.hmacSHA512(data, node.chainCode);
         const iL = i.slice(0, 32);
         const iR = i.slice(32);
 
         // derive public key
-        const extSecretKey = await CryptoUtils.sha512(iL);
-        const _pk = await node.curve.publicKey(extSecretKey);
+        const _pk = await node.curve.publicKey(iL);
         const pk = Buffer.concat([Buffer.from('00', 'hex'), _pk]);
-        console.log(`extsk: ${extSecretKey.toString('hex')}\n pk: ${pk.toString('hex')}`);
         
-
         return {
             secretKey: iL, 
             chainCode: iR, 
@@ -74,15 +71,13 @@ export namespace HDKeyUtils {
      */
     export async function fromSeed(seed: Buffer, curve: CurveInfo): Promise<HDNode> {
         // need to verify seed length is 512 bits
-        let i = CryptoUtils.hmacSHA512(Buffer.from(curve.bip32Name, 'utf8'), seed);
+        const i = await CryptoUtils.hmacSHA512(seed, Buffer.from(curve.bip32Name, 'utf8'));
         const iL = i.slice(0, 32);
         const iR = i.slice(32);
 
         // derive public key
-        const extSecretKey = Buffer.from(await CryptoUtils.sha512(iL));
-        const _pk = await curve.publicKey(extSecretKey);
+        const _pk = await curve.publicKey(iL);
         const pk = Buffer.concat([Buffer.from('00', 'hex'), _pk]);
-        console.log(`extsk: ${extSecretKey.toString('hex')}\n pk: ${pk.toString('hex')}`);
         
         return {
             secretKey: iL, 

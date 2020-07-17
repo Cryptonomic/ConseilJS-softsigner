@@ -1,7 +1,7 @@
 export interface HDNode {
     readonly secretKey: Buffer;
     readonly chainCode: Buffer;
-    publicKey: Buffer | undefined;
+    readonly publicKey: Buffer;
     readonly index: number | undefined; // undefined for master node
     readonly depth: number;
     readonly curve: CurveInfo;
