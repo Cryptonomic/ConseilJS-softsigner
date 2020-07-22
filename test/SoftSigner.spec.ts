@@ -10,9 +10,19 @@ use(chaiAsPromised);
 let signer: Signer;
 
 describe('SoftSigner tests', () => {
-    it('constructor', async () => {
+    it('constructor without key encryption', async () => {
         const keyStore = await KeyStoreUtils.restoreIdentityFromSecretKey('edskRgu8wHxjwayvnmpLDDijzD3VZDoAH7ZLqJWuG4zg7LbxmSWZWhtkSyM5Uby41rGfsBGk4iPKWHSDniFyCRv3j7YFCknyHH');
-        signer = new SoftSigner(TezosMessageUtils.writeKeyWithHint(keyStore.secretKey, 'edsk'));
+        
+        signer = await SoftSigner.createSigner(TezosMessageUtils.writeKeyWithHint(keyStore.secretKey, 'edsk'), -1);
+
+        expect(signer).to.be.not.null;
+    });
+
+    it('constructor with key encryption', async () => {
+        const keyStore = await KeyStoreUtils.restoreIdentityFromSecretKey('edskRgu8wHxjwayvnmpLDDijzD3VZDoAH7ZLqJWuG4zg7LbxmSWZWhtkSyM5Uby41rGfsBGk4iPKWHSDniFyCRv3j7YFCknyHH');
+        
+        signer = await SoftSigner.createSigner(TezosMessageUtils.writeKeyWithHint(keyStore.secretKey, 'edsk'), 5);
+        await (new Promise(resolve => setTimeout(resolve, 6000)));
 
         expect(signer).to.be.not.null;
     });
@@ -29,5 +39,11 @@ describe('SoftSigner tests', () => {
         const result = await signer.signText('Nachos Guacamole');
 
         expect(result).to.equal('edsigtgAgZNqK9JvihdDj4BduDaQYJR5vfca9pbowNDtc4aTRnbUcFv4YmJbQDBK9XpMnhntW26uSAHtEtpCo84Rt7jPg3iYXqY');
+    });
+
+    it('signTextHash', async () => {
+        const result = await signer.signTextHash('Nachos Guacamole');
+
+        expect(result).to.equal('edsigtnrQesbWjnoKmKYZZR9dSJYwkWMJw4rEq9xwRuehEhXzk1tCmvCAnTEgCE1zaYhpPHpECYapufEtFBSkj4vCSj1gKJLnZN');
     });
 });

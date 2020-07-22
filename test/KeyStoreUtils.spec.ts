@@ -46,6 +46,12 @@ describe('KeyStoreUtils tests', () => {
         expect(result.publicKeyHash).to.equal('tz1d6c6SVPfyoEodJqXNLPtknqoJMSRVYn8n');
     });
 
+    it('restoreIdentityFromMnemonic, no validation', async () => {
+        const result = await KeyStoreUtils.restoreIdentityFromMnemonic('resist winner shift attract issue penalty feed disease guess ridge grace warfare brave cause jar track exhibit movie seminar light broken light few tomato', 'Nachos Tacos', 'tz1d6c6SVPfyoEodJqXNLPtknqoJMSRVYn8n', undefined, false);
+
+        expect(result.publicKeyHash).to.equal('tz1d6c6SVPfyoEodJqXNLPtknqoJMSRVYn8n');
+    });
+
     it('restoreIdentityFromMnemonic fail verification', async () => {
         await expect(KeyStoreUtils.restoreIdentityFromMnemonic('resist winner shift attract issue penalty feed disease guess ridge grace warfare brave cause jar track exhibit movie seminar light broken light few tomato', 'Nachos Tacos', 'tz1WRm1WMpioh4Gm1eopgvudaEoY6wX7cTTg'))
             .to.be.rejectedWith('The given mnemonic and passphrase do not correspond to the supplied public key hash');
@@ -99,6 +105,16 @@ describe('KeyStoreUtils tests', () => {
         const sig = 'edsigtbmrgC8V2xU3Dc3n99v8CZk3cQAX1PcwbGRDkVkFSqax996qTPXsLryas9WBN9mCXiJFQSUiVkkkot6jQ4eEsU8rAt6jzW';
 
         const result = await KeyStoreUtils.checkTextSignature(sig, message, keyStore.publicKey);
+
+        expect(result).to.equal(true);
+    });
+
+    it('checkTextSignature, hashed', async () => {
+        const message = 'Tacos Burritos';
+        const keyStore = await KeyStoreUtils.restoreIdentityFromSecretKey('edskRgu8wHxjwayvnmpLDDijzD3VZDoAH7ZLqJWuG4zg7LbxmSWZWhtkSyM5Uby41rGfsBGk4iPKWHSDniFyCRv3j7YFCknyHH');
+        const sig = 'edsigtmoSkpMujSVYXH6zxSaZyiH27qYscBezFWNnDohoBoKdmY9c4Jk8EhdNGok9riQGLu1MTnXM9y5om2cRAUCdFtXKQKp57f';
+
+        const result = await KeyStoreUtils.checkTextSignature(sig, message, keyStore.publicKey, true);
 
         expect(result).to.equal(true);
     });

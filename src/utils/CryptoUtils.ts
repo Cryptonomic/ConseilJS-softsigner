@@ -67,7 +67,7 @@ export namespace CryptoUtils {
      * @param secretKey 
      */
     export async function recoverPublicKey(secretKey: Buffer) {
-        const k = await wrapper.publickey(secretKey);
+        const k = await wrapper.publicKey(secretKey);
 
         return { privateKey: k.privateKey, publicKey: k.publicKey };
     }

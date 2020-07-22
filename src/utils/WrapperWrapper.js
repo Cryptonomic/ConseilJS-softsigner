@@ -28,7 +28,7 @@ const seed_keypair = async (seed) => {
     return sodiumsumo.crypto_sign_seed_keypair(seed);
 }
 
-const publickey = async (sk) => {
+const publicKey = async (sk) => {
     await sodiumsumo.ready;
     const seed = sodiumsumo.crypto_sign_ed25519_sk_to_seed(sk)
     return sodiumsumo.crypto_sign_seed_keypair(seed);
@@ -64,4 +64,4 @@ const checkSignature = async (sig, message, key) => {
     return sodiumsumo.crypto_sign_verify_detached(sig, message, key);
 }
 
-module.exports = {salt, nonce, keys, seed_keypair, publickey, pwhash, close, open, sign, checkSignature};
+module.exports = {salt, nonce, keys, seed_keypair, publicKey, pwhash, close, open, sign, checkSignature};
