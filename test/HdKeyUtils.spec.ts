@@ -184,8 +184,11 @@ describe('Trezor TZ1 address test vector', () => {
         for (const sample of trezorTZ1TestVector.derivations) {
             const n = await HDKeyUtils.derivePath(rootNode, sample.path);
 
-            // check publicKey (need to encode)
-            // check publicKeyHash
+            const pkey = TezosMessageUtils.readPublicKey(n.publicKey.toString('hex')); // is this serializing properly?
+            expect(pkey).to.equal(sample.publicKey);
+
+            const pkeyHash = TezosMessageUtils.computeKeyHash(Buffer.from(pkey), 'tz1');
+            expect(pkeyHash).to.equal(sample.publicKeyHash);
         }
     });
 });
