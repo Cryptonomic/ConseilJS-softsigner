@@ -30,7 +30,7 @@ export namespace KeyStoreUtils {
     /**
      * 
      * 
-     * @param privateKey Secret key to restore public key and hash from.
+     * @param {string} secretKey Secret key to restore public key and hash from.
      */
     export async function restoreIdentityFromSecretKey(secretKey: string): Promise<KeyStore> {
         const secretKeyBytes = TezosMessageUtils.writeKeyWithHint(secretKey, 'edsk');
@@ -89,12 +89,12 @@ export namespace KeyStoreUtils {
      */
     export async function generateKeys(seed: Buffer): Promise<{ publicKey: Buffer, secretKey: Buffer}> {
         const keys = await CryptoUtils.generateKeys(seed);
-        return { publicKey: keys.publicKey, secretKey: keys.privateKey };
+        return { publicKey: keys.publicKey, secretKey: keys.secretKey };
     }
 
     export async function recoverKeys(secretKey: Buffer): Promise<{ publicKey: Buffer, secretKey: Buffer}> {
         const keys = await CryptoUtils.recoverPublicKey(secretKey);
-        return { publicKey: keys.publicKey, secretKey: keys.privateKey };
+        return { publicKey: keys.publicKey, secretKey: keys.secretKey };
     }
 
     /**

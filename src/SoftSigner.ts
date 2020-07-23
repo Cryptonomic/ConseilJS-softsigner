@@ -1,5 +1,5 @@
 import * as GeneratePassword from 'generate-password'
-import { Signer, TezosMessageUtils } from 'conseiljs';
+import { Signer, SignerCurve, TezosMessageUtils } from 'conseiljs';
 
 import { CryptoUtils } from './utils/CryptoUtils'
 
@@ -33,6 +33,10 @@ export class SoftSigner implements Signer {
         if (validity < 0) {
             this._key = secretKey;
         }
+    }
+
+    public getSignerCurve(): SignerCurve {
+        return SignerCurve.ED25519
     }
 
     public static async createSigner(secretKey: Buffer, validity: number = 60): Promise<Signer> {

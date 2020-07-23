@@ -54,7 +54,7 @@ export namespace CryptoUtils {
     export async function generateKeys(seed: Buffer) {
         const k = await wrapper.keys(seed);
 
-        return { privateKey: k.privateKey, publicKey: k.publicKey };
+        return { secretKey: k.privateKey, publicKey: k.publicKey };
     }
 
     /**
@@ -65,7 +65,7 @@ export namespace CryptoUtils {
     export async function recoverPublicKey(secretKey: Buffer) {
         const k = await wrapper.publicKey(secretKey);
 
-        return { privateKey: k.privateKey, publicKey: k.publicKey };
+        return { secretKey: k.privateKey, publicKey: k.publicKey };
     }
 
     /**
