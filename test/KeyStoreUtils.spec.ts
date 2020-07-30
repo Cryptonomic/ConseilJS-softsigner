@@ -1,6 +1,6 @@
 import { expect, use } from "chai";
 import chaiAsPromised from 'chai-as-promised';
-import { TezosMessageUtils } from 'conseiljs';
+import { SignerCurve, TezosMessageUtils } from 'conseiljs';
 
 import { KeyStoreUtils } from '../src/KeyStoreUtils';
 
@@ -99,7 +99,7 @@ describe('KeyStoreUtils tests', () => {
         expect(result.toString('utf8')).to.equal('Tezos Tacos Nachos Burritos');
     });
 
-    it('checkTextSignature', async () => {
+    it('checkTextSignature ED25519', async () => {
         const message = 'Tacos Burritos';
         const keyStore = await KeyStoreUtils.restoreIdentityFromSecretKey('edskRgu8wHxjwayvnmpLDDijzD3VZDoAH7ZLqJWuG4zg7LbxmSWZWhtkSyM5Uby41rGfsBGk4iPKWHSDniFyCRv3j7YFCknyHH');
         const sig = 'edsigtbmrgC8V2xU3Dc3n99v8CZk3cQAX1PcwbGRDkVkFSqax996qTPXsLryas9WBN9mCXiJFQSUiVkkkot6jQ4eEsU8rAt6jzW';
@@ -109,7 +109,7 @@ describe('KeyStoreUtils tests', () => {
         expect(result).to.equal(true);
     });
 
-    it('checkTextSignature, hashed', async () => {
+    it('checkTextSignature ED25519, hashed', async () => {
         let publicKey = (await KeyStoreUtils.restoreIdentityFromSecretKey('edskRgu8wHxjwayvnmpLDDijzD3VZDoAH7ZLqJWuG4zg7LbxmSWZWhtkSyM5Uby41rGfsBGk4iPKWHSDniFyCRv3j7YFCknyHH')).publicKey;
         let message = 'Tacos Burritos';
         let sig = 'edsigtmoSkpMujSVYXH6zxSaZyiH27qYscBezFWNnDohoBoKdmY9c4Jk8EhdNGok9riQGLu1MTnXM9y5om2cRAUCdFtXKQKp57f';
@@ -120,6 +120,16 @@ describe('KeyStoreUtils tests', () => {
         message = 'test';
         sig = 'edsigtzLBGCyadERX1QsYHKpwnxSxEYQeGLnJGsSkHEsyY8vB5GcNdnvzUZDdFevJK7YZQ2ujwVjvQZn62ahCEcy74AwtbA8HuN';
         result = await KeyStoreUtils.checkTextSignature(sig, message, publicKey, true);
+        expect(result).to.equal(true);
+    });
+
+    it('checkTextSignature SECP256K1', async () => {
+        const message = 'Tacos Burritos';
+        const publicKey = TezosMessageUtils.readKeyWithHint(Buffer.from('0366c4ad39716c06e1cb9348905d3743f236a8b97c5835ced80930dadf51bfbfdd', 'hex'), 'sppk');
+        const sig = TezosMessageUtils.readSignatureWithHint(Buffer.from('e9a933ffaaf885bd345ddba87c6518e2a87e6827ab53cc112fbe415b83fc74cf437bc970ecdf2b886dc0005b6358ae04cc03de25cf841bc5fd1f1a525d9920ad', 'hex'), SignerCurve.SECP256K1);
+
+        const result = await KeyStoreUtils.checkTextSignature(sig, message, publicKey, true);
+
         expect(result).to.equal(true);
     });
 });

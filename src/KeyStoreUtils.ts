@@ -1,6 +1,7 @@
 import * as bip39 from 'bip39';
+import * as secp256k1 from 'secp256k1';
 
-import { KeyStore, KeyStoreCurve, KeyStoreType } from 'conseiljs';
+import { KeyStore, KeyStoreCurve, KeyStoreType, SignerCurve } from 'conseiljs';
 import { TezosMessageUtils } from 'conseiljs';
 
 import { CryptoUtils } from './utils/CryptoUtils'
@@ -134,9 +135,35 @@ export namespace KeyStoreUtils {
             messageBytes = Buffer.from(message, 'utf8');
         }
 
-        const sig = TezosMessageUtils.writeSignatureWithHint(signature, 'edsig');
-        const pk = TezosMessageUtils.writeKeyWithHint(publicKey, 'edpk');
+        return checkSignature(signature, messageBytes, publicKey);
+    }
 
-        return await CryptoUtils.checkSignature(sig, messageBytes, pk);
+    export async function checkSignature(signature: string, bytes: Buffer, publicKey: string): Promise<boolean> {
+        const sigPrefix = signature.slice(0, 5);
+        const keyPrefix = publicKey.slice(0, 4);
+        let curve = SignerCurve.ED25519;
+
+        if (sigPrefix === 'edsig' && keyPrefix === 'edpk') {
+            curve = SignerCurve.ED25519;
+        } else if (sigPrefix === 'spsig' && keyPrefix === 'sppk') {
+            curve = SignerCurve.SECP256K1;
+        } else if (sigPrefix === 'p2sig' && keyPrefix === 'p2pk') {
+            throw new Error('secp256r1 curve is not currently supported');
+        } else {
+            throw new Error(`Signature/key prefix mismatch ${sigPrefix}/${keyPrefix}`);
+        }
+
+        const sig = TezosMessageUtils.writeSignatureWithHint(signature, sigPrefix);
+        const pk = TezosMessageUtils.writeKeyWithHint(publicKey, keyPrefix);
+
+        if (curve === SignerCurve.ED25519) {
+            return await CryptoUtils.checkSignature(sig, bytes, pk);
+        }
+
+        if (curve === SignerCurve.SECP256K1) {
+            return secp256k1.ecdsaVerify(sig, bytes, pk);
+        }
+
+        return false;
     }
 }
