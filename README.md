@@ -48,7 +48,7 @@ TBD
 <html>
 <head>
     <script src="https://cdn.jsdelivr.net/gh/cryptonomic/conseiljs-softsigner/dist-web/conseiljs-softsigner.min.js"
-        integrity="sha384-V1iaajn0x/SMFcZ9Y/xNQmqQSKyll6Dzt27U6OWiv8NdbHTVaHOGHdQ8g0G68HPd"
+        integrity="sha384-sv6LkGbuz78mVckOK+Fhy/wJXzO/5Bmo/SDp+l+/yrjlgasQ+3rOKZxXGvIDQsKN"
         crossorigin="anonymous"></script>
         <script>
             //conseiljssoftsigner.
