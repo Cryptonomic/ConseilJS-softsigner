@@ -5,6 +5,7 @@ import * as bip39 from 'bip39';
 import { TezosMessageUtils } from 'conseiljs';
 
 import { CryptoUtils } from '../src/utils/CryptoUtils';
+const wrapper = require('../src/utils/WrapperWrapper');
 import { HDKeyUtils } from '../src/HdKeyUtils';
 import { KeyStoreUtils } from '../src/KeyStoreUtils';
 
@@ -176,19 +177,20 @@ describe('SLIP10 ed25519 test vectors', () => {
     });
 });
 
-describe('Trezor TZ1 address test vector', () => {
-    it('Trezor TZ1 address test vector', async () => {
-        const seed = (await bip39.mnemonicToSeed(trezorTZ1TestVector.mnemonic)).slice(0, 32);
+describe('Trezor tz1 address test vector', () => {
+    it('Trezor tz1 address test vector', async () => {
+        const seed = (await bip39.mnemonicToSeed(trezorTZ1TestVector.mnemonic)).slice(0, 64);
         const rootNode = await HDKeyUtils.fromSeed(seed, CryptoUtils.ed25519);
 
         for (const sample of trezorTZ1TestVector.derivations) {
             const n = await HDKeyUtils.derivePath(rootNode, sample.path);
+            const kstore = await wrapper.seed_keypair(n.secretKey);
+            const keyBuff = Buffer.from(kstore.privateKey.buffer);
+            const skey = TezosMessageUtils.readKeyWithHint(keyBuff, 'edsk');
+            const store = await KeyStoreUtils.restoreIdentityFromSecretKey(skey);
 
-            const pkey = TezosMessageUtils.readPublicKey(n.publicKey.toString('hex')); // is this serializing properly?
-            expect(pkey).to.equal(sample.publicKey);
-
-            const pkeyHash = TezosMessageUtils.computeKeyHash(Buffer.from(pkey), 'tz1');
-            expect(pkeyHash).to.equal(sample.publicKeyHash);
+            expect(store.publicKey).to.equal(sample.publicKey);
+            expect(store.publicKeyHash).to.equal(sample.publicKeyHash);
         }
     });
 });

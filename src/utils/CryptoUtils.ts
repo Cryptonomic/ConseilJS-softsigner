@@ -90,8 +90,8 @@ export namespace CryptoUtils {
     export const ed25519: CurveInfo = {
         bip32Name: BIP32Name.ED25519,
         async publicKey(secretKey: Buffer): Promise<Buffer> {
-            const pk = Buffer.from((await wrapper.seed_keypair(secretKey)).publicKey.buffer, 'hex');
-            return pk;
+            //return Buffer.from((await wrapper.seed_keypair(secretKey)).publicKey.buffer, 'hex');
+            return (await wrapper.seed_keypair(secretKey)).publicKey;
         }
     }
 
