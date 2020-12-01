@@ -61,8 +61,7 @@ export namespace KeyStoreUtils {
 
         let keys: { secretKey: Buffer, publicKey: Buffer };
         const seed = await bip39.mnemonicToSeed(mnemonic, password);
-        if (derivationPath !== undefined) {
-            const sk = (Ed25519.derivePath(derivationPath, seed.toString("hex"))).key;
+        if (derivationPath !== undefined && derivationPath.length > 0) {
             const p = Ed25519.derivePath(derivationPath, seed.toString("hex"));
 
             keys = await recoverKeys(Buffer.concat([p.key, p.chainCode]));
