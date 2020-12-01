@@ -1,5 +1,6 @@
 import * as bip39 from 'bip39';
 import * as secp256k1 from 'secp256k1';
+import * as Ed25519 from 'ed25519-hd-key';
 
 import { KeyStore, KeyStoreCurve, KeyStoreType, SignerCurve } from 'conseiljs';
 import { TezosMessageUtils } from 'conseiljs';
@@ -58,8 +59,17 @@ export namespace KeyStoreUtils {
             if (!bip39.validateMnemonic(mnemonic)) { throw new Error('The given mnemonic could not be validated.'); }
         }
 
-        const seed = (await bip39.mnemonicToSeed(mnemonic, password)).slice(0, 32);
-        const keys = await generateKeys(seed);
+        let keys: { secretKey: Buffer, publicKey: Buffer };
+        const seed = await bip39.mnemonicToSeed(mnemonic, password);
+        if (derivationPath !== undefined) {
+            const sk = (Ed25519.derivePath(derivationPath, seed.toString("hex"))).key;
+            const p = Ed25519.derivePath(derivationPath, seed.toString("hex"));
+
+            keys = await recoverKeys(Buffer.concat([p.key, p.chainCode]));
+        } else {
+            keys = await generateKeys(seed.slice(0, 32));
+        }
+
         const secretKey = TezosMessageUtils.readKeyWithHint(keys.secretKey, 'edsk');
         const publicKey = TezosMessageUtils.readKeyWithHint(keys.publicKey, 'edpk');
         const publicKeyHash = TezosMessageUtils.computeKeyHash(keys.publicKey, 'tz1');
