@@ -62,9 +62,10 @@ export namespace KeyStoreUtils {
         let keys: { secretKey: Buffer, publicKey: Buffer };
         const seed = await bip39.mnemonicToSeed(mnemonic, password);
         if (derivationPath !== undefined && derivationPath.length > 0) {
-            const p = Ed25519.derivePath(derivationPath, seed.toString("hex"));
+            const keySource = Ed25519.derivePath(derivationPath, seed.toString("hex"));
+            const combinedKey = Buffer.concat([keySource.key, keySource.chainCode]);
 
-            keys = await recoverKeys(Buffer.concat([p.key, p.chainCode]));
+            keys = await recoverKeys(combinedKey);
         } else {
             keys = await generateKeys(seed.slice(0, 32));
         }
@@ -147,6 +148,13 @@ export namespace KeyStoreUtils {
         return checkSignature(signature, messageBytes, publicKey);
     }
 
+    /**
+     * Compare a given signature against a message and public key.
+     * 
+     * @param signature Message signature to verify in Tezos string format, prefixed with edsig, or spsig for ED25519 and SECP256K1 signatures.
+     * @param bytes Message to check the signature against
+     * @param publicKey Public key to check the signature against
+     */
     export async function checkSignature(signature: string, bytes: Buffer, publicKey: string): Promise<boolean> {
         const sigPrefix = signature.slice(0, 5);
         const keyPrefix = publicKey.slice(0, 4);
