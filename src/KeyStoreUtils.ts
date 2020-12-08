@@ -1,6 +1,8 @@
 import * as bip39 from 'bip39';
+import * as secp256k1 from 'secp256k1';
+import * as Ed25519 from 'ed25519-hd-key';
 
-import { KeyStore, KeyStoreCurve, KeyStoreType } from 'conseiljs';
+import { KeyStore, KeyStoreCurve, KeyStoreType, SignerCurve } from 'conseiljs';
 import { TezosMessageUtils } from 'conseiljs';
 
 import { CryptoUtils } from './utils/CryptoUtils'
@@ -57,8 +59,17 @@ export namespace KeyStoreUtils {
             if (!bip39.validateMnemonic(mnemonic)) { throw new Error('The given mnemonic could not be validated.'); }
         }
 
-        const seed = (await bip39.mnemonicToSeed(mnemonic, password)).slice(0, 32);
-        const keys = await generateKeys(seed);
+        let keys: { secretKey: Buffer, publicKey: Buffer };
+        const seed = await bip39.mnemonicToSeed(mnemonic, password);
+        if (derivationPath !== undefined && derivationPath.length > 0) {
+            const keySource = Ed25519.derivePath(derivationPath, seed.toString("hex"));
+            const combinedKey = Buffer.concat([keySource.key, keySource.chainCode]);
+
+            keys = await recoverKeys(combinedKey);
+        } else {
+            keys = await generateKeys(seed.slice(0, 32));
+        }
+
         const secretKey = TezosMessageUtils.readKeyWithHint(keys.secretKey, 'edsk');
         const publicKey = TezosMessageUtils.readKeyWithHint(keys.publicKey, 'edpk');
         const publicKeyHash = TezosMessageUtils.computeKeyHash(keys.publicKey, 'tz1');
@@ -134,9 +145,42 @@ export namespace KeyStoreUtils {
             messageBytes = Buffer.from(message, 'utf8');
         }
 
-        const sig = TezosMessageUtils.writeSignatureWithHint(signature, 'edsig');
-        const pk = TezosMessageUtils.writeKeyWithHint(publicKey, 'edpk');
+        return checkSignature(signature, messageBytes, publicKey);
+    }
 
-        return await CryptoUtils.checkSignature(sig, messageBytes, pk);
+    /**
+     * Compare a given signature against a message and public key.
+     * 
+     * @param signature Message signature to verify in Tezos string format, prefixed with edsig, or spsig for ED25519 and SECP256K1 signatures.
+     * @param bytes Message to check the signature against
+     * @param publicKey Public key to check the signature against
+     */
+    export async function checkSignature(signature: string, bytes: Buffer, publicKey: string): Promise<boolean> {
+        const sigPrefix = signature.slice(0, 5);
+        const keyPrefix = publicKey.slice(0, 4);
+        let curve = SignerCurve.ED25519;
+
+        if (sigPrefix === 'edsig' && keyPrefix === 'edpk') {
+            curve = SignerCurve.ED25519;
+        } else if (sigPrefix === 'spsig' && keyPrefix === 'sppk') {
+            curve = SignerCurve.SECP256K1;
+        } else if (sigPrefix === 'p2sig' && keyPrefix === 'p2pk') {
+            throw new Error('secp256r1 curve is not currently supported');
+        } else {
+            throw new Error(`Signature/key prefix mismatch ${sigPrefix}/${keyPrefix}`);
+        }
+
+        const sig = TezosMessageUtils.writeSignatureWithHint(signature, sigPrefix);
+        const pk = TezosMessageUtils.writeKeyWithHint(publicKey, keyPrefix);
+
+        if (curve === SignerCurve.ED25519) {
+            return await CryptoUtils.checkSignature(sig, bytes, pk);
+        }
+
+        if (curve === SignerCurve.SECP256K1) {
+            return secp256k1.ecdsaVerify(sig, bytes, pk);
+        }
+
+        return false;
     }
 }
