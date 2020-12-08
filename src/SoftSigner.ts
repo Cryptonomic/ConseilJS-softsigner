@@ -12,10 +12,9 @@ export class SoftSigner implements Signer {
 
     /**
      * 
-     * 
      * @param secretKey Secret key for signing.
-     * @param validity Duration for keeping the key decrypted in memory.
-     * @param passphrase
+     * @param isEncrypted Specifies if the provided key material is encrypted
+     * @param salt If the key was encrypted, this parameter contains the salt that would then be combined with a password to decrypt the key.
      */
     private constructor(secretKey: Buffer, isEncrypted: boolean = false, salt?: Buffer) {
         this._secretKey = secretKey;
@@ -27,6 +26,11 @@ export class SoftSigner implements Signer {
         return SignerCurve.ED25519
     }
 
+    /**
+     * 
+     * @param secretKey Plain key material
+     * @param password Password to optionally encrypt the key in memory
+     */
     public static async createSigner(secretKey: Buffer, password: string = ''): Promise<Signer> {
         if (password.length > 0) {
             const salt = await CryptoUtils.generateSaltForPwHash();
@@ -49,6 +53,7 @@ export class SoftSigner implements Signer {
      * This method in intended to sign Tezos operations. It produces a 32-byte blake2s hash prior to signing the buffer.
      * 
      * @param {Buffer} bytes Bytes to sign
+     * @param {string} password Optional password to decrypt the key if necessary
      * @returns {Buffer} Signature
      */
     public async signOperation(bytes: Buffer, password: string = ''): Promise<Buffer> {
@@ -59,6 +64,7 @@ export class SoftSigner implements Signer {
      * Convenience function that uses Tezos nomenclature to sign arbitrary text.
      * 
      * @param message UTF-8 text
+     * @param {string} password Optional password to decrypt the key if necessary
      * @returns {Promise<string>} base58check-encoded signature prefixed with 'edsig'
      */
     public async signText(message: string, password: string = ''): Promise<string> {
@@ -71,6 +77,7 @@ export class SoftSigner implements Signer {
      * * Convenience function that uses Tezos nomenclature to sign arbitrary text. This method produces a 32-byte blake2s hash prior to signing.
      * 
      * @param message UTF-8 text
+     * @param {string} password Optional password to decrypt the key if necessary
      * @returns {Promise<string>} base58check-encoded signature prefixed with 'edsig'
      */
     public async signTextHash(message: string, password: string = ''): Promise<string> {
