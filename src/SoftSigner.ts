@@ -41,7 +41,7 @@ export class SoftSigner implements Signer {
         return new SoftSigner(secretKey);
     }
 
-    private async getKey(password: string = '') {
+    public async getKey(password: string = '') {
         if (this._isEncrypted && password.length > 0) {
             return await CryptoUtils.decryptMessage(this._secretKey, password, this._salt);
         }
