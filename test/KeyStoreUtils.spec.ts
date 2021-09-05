@@ -132,4 +132,14 @@ describe('KeyStoreUtils tests', () => {
 
         expect(result).to.equal(true);
     });
+
+    it('checkSignature ED25519', async () => {
+        const message = Buffer.from('057b22616c696173223a2274657374222c226465736372697074696f6e223a2274657374227d', 'hex');
+        const publicKey = 'edpkvQ2i7NbUP4y1B1VBc9kiaiUu5n3Ps79bxyxCuYUCPcsxZ83rwS';
+        const sig = 'edsigtiCcH17ciafZjVX6cX1p1ncZ7hK7BJSeauhZr6n2LN2yFmEoZCVbmhgXfy7NwAZ4Tj6Vf8SfpsxCBxPhi6SZXHLpuMw56Q';
+
+        const result = await KeyStoreUtils.checkSignature(sig, message, publicKey, true);
+
+        expect(result).to.equal(true);
+    });
 });

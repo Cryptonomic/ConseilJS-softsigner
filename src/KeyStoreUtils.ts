@@ -154,8 +154,9 @@ export namespace KeyStoreUtils {
      * @param signature Message signature to verify in Tezos string format, prefixed with edsig, or spsig for ED25519 and SECP256K1 signatures.
      * @param bytes Message to check the signature against
      * @param publicKey Public key to check the signature against
+     * @param prehash
      */
-    export async function checkSignature(signature: string, bytes: Buffer, publicKey: string): Promise<boolean> {
+    export async function checkSignature(signature: string, bytes: Buffer, publicKey: string, prehash = false): Promise<boolean> {
         const sigPrefix = signature.slice(0, 5);
         const keyPrefix = publicKey.slice(0, 4);
         let curve = SignerCurve.ED25519;
@@ -168,6 +169,13 @@ export namespace KeyStoreUtils {
             throw new Error('secp256r1 curve is not currently supported');
         } else {
             throw new Error(`Signature/key prefix mismatch ${sigPrefix}/${keyPrefix}`);
+        }
+
+        let messageBytes: Buffer;
+        if (prehash) {
+            messageBytes = TezosMessageUtils.simpleHash(bytes, 32);
+        } else {
+            messageBytes = bytes
         }
 
         const sig = TezosMessageUtils.writeSignatureWithHint(signature, sigPrefix);
