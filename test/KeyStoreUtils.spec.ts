@@ -3,6 +3,8 @@ import chaiAsPromised from 'chai-as-promised';
 import { SignerCurve, TezosMessageUtils } from 'conseiljs';
 
 import { KeyStoreUtils } from '../src/KeyStoreUtils';
+import { SoftSigner } from '../src/SoftSigner';
+
 
 use(chaiAsPromised);
 
@@ -134,11 +136,11 @@ describe('KeyStoreUtils tests', () => {
     });
 
     it('checkSignature ED25519', async () => {
+        const keyStore = await KeyStoreUtils.restoreIdentityFromSecretKey('edskRgu8wHxjwayvnmpLDDijzD3VZDoAH7ZLqJWuG4zg7LbxmSWZWhtkSyM5Uby41rGfsBGk4iPKWHSDniFyCRv3j7YFCknyHH');
         const message = Buffer.from('057b22616c696173223a2274657374222c226465736372697074696f6e223a2274657374227d', 'hex');
-        const publicKey = 'edpkvQ2i7NbUP4y1B1VBc9kiaiUu5n3Ps79bxyxCuYUCPcsxZ83rwS';
-        const sig = 'edsigtiCcH17ciafZjVX6cX1p1ncZ7hK7BJSeauhZr6n2LN2yFmEoZCVbmhgXfy7NwAZ4Tj6Vf8SfpsxCBxPhi6SZXHLpuMw56Q';
+        const sig = 'edsigtxLSSVP4163hX7X6gpk4PaujGjHzGhBhmmUJ5yKyuExVjeUodrz5cZtrHiS1c9gurS99XUC9qJVKYgXR87SEjsqUwxCynk';
 
-        const result = await KeyStoreUtils.checkSignature(sig, message, publicKey, true);
+        const result = await KeyStoreUtils.checkSignature(sig, message, keyStore.publicKey, true);
 
         expect(result).to.equal(true);
     });
