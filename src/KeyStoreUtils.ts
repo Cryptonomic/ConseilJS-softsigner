@@ -182,7 +182,7 @@ export namespace KeyStoreUtils {
         const pk = TezosMessageUtils.writeKeyWithHint(publicKey, keyPrefix);
 
         if (curve === SignerCurve.ED25519) {
-            return await CryptoUtils.checkSignature(sig, messageBytes, pk);
+            return CryptoUtils.checkSignature(sig, messageBytes, pk);
         }
 
         if (curve === SignerCurve.SECP256K1) {
