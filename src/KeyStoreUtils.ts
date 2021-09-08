@@ -154,8 +154,9 @@ export namespace KeyStoreUtils {
      * @param signature Message signature to verify in Tezos string format, prefixed with edsig, or spsig for ED25519 and SECP256K1 signatures.
      * @param bytes Message to check the signature against
      * @param publicKey Public key to check the signature against
+     * @param prehash Setting this option to true (default is false) will prehash the message buffer into a 32 byte summary before signing that instead of the full message
      */
-    export async function checkSignature(signature: string, bytes: Buffer, publicKey: string): Promise<boolean> {
+    export async function checkSignature(signature: string, bytes: Buffer, publicKey: string, prehash = false): Promise<boolean> {
         const sigPrefix = signature.slice(0, 5);
         const keyPrefix = publicKey.slice(0, 4);
         let curve = SignerCurve.ED25519;
@@ -170,15 +171,22 @@ export namespace KeyStoreUtils {
             throw new Error(`Signature/key prefix mismatch ${sigPrefix}/${keyPrefix}`);
         }
 
+        let messageBytes: Buffer;
+        if (prehash) {
+            messageBytes = TezosMessageUtils.simpleHash(bytes, 32);
+        } else {
+            messageBytes = bytes
+        }
+
         const sig = TezosMessageUtils.writeSignatureWithHint(signature, sigPrefix);
         const pk = TezosMessageUtils.writeKeyWithHint(publicKey, keyPrefix);
 
         if (curve === SignerCurve.ED25519) {
-            return await CryptoUtils.checkSignature(sig, bytes, pk);
+            return CryptoUtils.checkSignature(sig, messageBytes, pk);
         }
 
         if (curve === SignerCurve.SECP256K1) {
-            return secp256k1.ecdsaVerify(sig, bytes, pk);
+            return secp256k1.ecdsaVerify(sig, messageBytes, pk);
         }
 
         return false;
