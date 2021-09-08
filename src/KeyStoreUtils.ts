@@ -154,7 +154,7 @@ export namespace KeyStoreUtils {
      * @param signature Message signature to verify in Tezos string format, prefixed with edsig, or spsig for ED25519 and SECP256K1 signatures.
      * @param bytes Message to check the signature against
      * @param publicKey Public key to check the signature against
-     * @param prehash
+     * @param prehash Setting this option to true (default is false) will prehash the message buffer into a 32 byte summary before signing that instead of the full message
      */
     export async function checkSignature(signature: string, bytes: Buffer, publicKey: string, prehash = false): Promise<boolean> {
         const sigPrefix = signature.slice(0, 5);
